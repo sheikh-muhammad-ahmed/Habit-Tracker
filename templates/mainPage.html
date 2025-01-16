@@ -1,0 +1,202 @@
+ <!DOCTYPE html>
+ <html lang="en">
+   <head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>Document</title>
+     <link
+       rel="stylesheet"
+       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+       integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+       crossorigin="anonymous"
+       referrerpolicy="no-referrer"
+     />
+     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css') }}">
+     <script src="https://cdn.tailwindcss.com"></script>
+     <script>
+       tailwind.config = {
+         theme: {
+           extend: {
+             colors: {
+               clifford: "#da373d",
+             },
+           },
+         },
+       };
+ 
+       let habitCount = 0;
+       let habits = [];
+ 
+       function openPopup() {
+         document.getElementById("popup").style.display = "block";
+       }
+ 
+       function closePopup() {
+         document.getElementById("popup").style.display = "none";
+       }
+ 
+       function addHabit() {
+         if (habitCount >= 4) {
+           alert("You cannot add more than 4 habits");
+           return;
+         }
+ 
+         const habitName = document.getElementById("habit_name").value;
+         const habitTime = document.getElementById("habit_time").value;
+ 
+         if (habitName && habitTime) {
+           const habitCard = {
+             name: habitName,
+             time: habitTime,
+             id: Date.now(),
+           };
+ 
+           habits.push(habitCard);
+           habitCount++;
+           updateHabitCards();
+           closePopup();
+         } else {
+           alert("Please fill out both fields");
+         }
+       }
+ 
+       function deleteHabit(id) {
+         habits = habits.filter((habit) => habit.id !== id);
+         habitCount--;
+         updateHabitCards();
+       }
+ 
+       function deleteAllHabits() {
+         habits = [];
+         habitCount = 0;
+         updateHabitCards();
+       }
+ 
+       function updateHabitCards() {
+         const habitCardsContainer = document.getElementById("habit-cards-grid");
+         habitCardsContainer.innerHTML = "";
+ 
+         if (habits.length === 0) {
+           habitCardsContainer.innerHTML = "<p class='text-white'>No habits added yet</p>";
+         }
+ 
+         habits.forEach((habit) => {
+           const timeLeft = getTimeLeft(habit.time);
+           const habitCard = `
+             <div class="bg-[#454545] text-white p-2 rounded-lg shadow-lg w-[50%] flex">
+               <div class='w-[70%] h-full flex flex-col'>
+                 <h4 class="text-sm font-bold">${habit.name}</h4>
+                 <p class="text-sm">Time Left: ${timeLeft}</p>
+               </div>
+               <div class='w-[30%] h-full flex items-center'>
+                 <button onclick="deleteHabit(${habit.id})" class="text-red-[#f60404] border-black flex items-center justify-start gap-1">
+                   <i class="fa-solid fa-trash" style="color: #f60404;"></i><p>Delete</p>
+                 </button>
+               </div>
+             </div>
+           `;
+           habitCardsContainer.innerHTML += habitCard;
+         });
+       }
+ 
+       function getTimeLeft(habitTime) {
+         const now = new Date();
+         const habitDate = new Date(now.toDateString() + " " + habitTime);
+ 
+         if (habitDate < now) {
+           habitDate.setDate(habitDate.getDate() + 1);
+         }
+ 
+         const timeDiff = habitDate - now;
+         const hours = Math.floor(timeDiff / 1000 / 60 / 60);
+         const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
+         const seconds = Math.floor((timeDiff / 1000) % 60);
+ 
+         return `${hours}h ${minutes}m ${seconds}s`;
+       }
+ 
+       function fetchDynamicTime() {
+         fetch('/get_dynamic_time')
+           .then(response => response.json())
+           .then(data => {
+             document.getElementById("dynamic-time").textContent = data.current_time;
+           });
+       }
+ 
+       setInterval(fetchDynamicTime, 1000);  // Fetch time every second
+ 
+       // Initialize dynamic time on page load
+       window.onload = fetchDynamicTime;
+     </script>
+   </head>
+   <body>
+     <main class="w-screen h-screen bg-[#252525]" style="background-image: url(/static/images/background.png); object-fit: cover">
+       <div class="mx-6">
+         <div class="h-24 w-full flex py-3">
+           <div class="logo w-[20%] h-full text-4xl flex items-center justify-start pl-6">
+             <p class="h-fit w-fit text-5xl align-center flex justify-center text-[#b9e24d]">
+               habbitt
+             </p>
+           </div>
+           <div class="w-[50%] h-full gap-[5rem] flex items-center px-8">
+             <a class="w-fit text-white text-2xl" href="#">Analytics</a>
+             <a class="w-fit text-white text-2xl" href="#">Help</a>
+             <a class="w-fit text-[#b9e24d] text-2xl" href="#">Logout</a>
+             <a class="w-fit text-white text-2xl" href="#">Calendar</a>
+           </div>
+         </div>
+       </div>
+       <div class="h-[80vh] flex flex-col mx-10">
+         <div class="calendar flex justify-center px-8 my-6 item-center">
+           <div class="flex gap-2 items-center w-full flex flex-row justify-end px-12">
+             <i class="fa-solid fa-clock" style="color: white; font-size: 2.3em"></i>
+             <p id="dynamic-time" class="text-3xl text-white h-12 justify-center items-center flex">Dynamic Time</p>
+           </div>
+         </div>
+         <div class="flex justify-center">
+           <div class="calendar bg-[#454545] h-64 w-[90%] flex items-center justify-center border-1 black rounded-[10px]">
+             <p class="text-8xl">calendar</p>
+           </div>
+         </div>
+         <div class="h-full  w-[90%] self-center">
+           <div class=" h-[20%] ">
+             <div class="flex text-3xl items-center justify-start h-full ">
+               <i class="fa-solid fa-person-running" style="color: #b9e24d"></i>
+               <p class="text-white">Add Habits</p>
+             </div>
+           </div>
+           <div class="flex h-[80%] gap-1 ">
+             <div class="w-[80%]  p-4 ">
+               <div id="habit-cards-grid" class="grid grid-cols-2 gap-4">
+               </div>
+             </div>
+             <div class="w-[20%]  flex flex-col items-center justify-evenly">
+               <button onclick="openPopup()" class="bg-[#b9e24d] w-[75%] h-[28%] rounded-[10px] text-3xl gap-3 flex item-center justify-center px-2">
+                 <i class="fa-solid fa-plus" style="background-color: black; color: antiquewhite; align-self: center; border-radius: 10px; font-size: 0.9em; padding: 0.2em;"></i>
+                 <p class="self-center">Add Habit</p>
+               </button>
+               <button onclick="deleteAllHabits()" class="border-2 rounded-[10px] border-[#f60404] w-[75%] h-[28%] rounded-[10px] text-3xl gap-3 flex item-center justify-center px-2 flex justify-center items-center">
+                 <i class="fa-solid fa-trash" style="color: #f60404;"></i>
+                 <p class="self-center text-[#f60404]">Delete All</p>
+               </button>
+             </div>
+           </div>
+         </div>
+       </div>
+     </main>
+ 
+     <div id="popup" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #252525; padding: 20px; border-radius: 10px;">
+       <div class="text-white">
+         <h3 class="text-2xl">Add Habit</h3>
+         <input type="text" id="habit_name" class="bg-[#252525] text-white p-2 rounded-[5px] mb-4" placeholder="Add Habit" /><br />
+         <label for="habit_time">Reminder Time:</label>
+         <input type="time" id="habit_time" class="bg-[#252525] text-white p-2 rounded-[5px]" /><br />
+         <button class="bg-[#b9e24d] p-2 rounded-[5px] mt-4" onclick="addHabit()">Save Habit</button>
+         <button class="bg-[#da373d] p-2 rounded-[5px] mt-4 ml-4" onclick="closePopup()">Cancel</button>
+       </div>
+     </div>
+   </body>
+ </html>
+ 
+
+

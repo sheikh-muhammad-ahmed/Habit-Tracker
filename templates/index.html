@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: '#da373d',
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body>
+<div class="backgroundImage h-screen w-screen bg-[#252525] flex justify-center items-center" style="background-image: url(/static/images/background.png); object-fit: cover;">
+    <div class=" w-[60%] h-[90%] flex flex-col justify-between">
+        <div class="header  h-[30%] flex items-center justify-center text-[8rem] flex-col">
+            <p class="text-[#b9e24d] font-semibold">Habitt</p>
+            <p class="text-3xl text-white font-semibold">log in</p>
+
+        </div>
+        <form class="form flex flex-col h-[55%]  flex flex col justify-start items-center gap-3">
+            <label for="" class="text-2xl  w-[30rem] h-[3.5] text-2xl px-1 text-[#b9e24d] my-2 font-semibold text-lg   ">Email</label>
+            <input type="text" placeholder="Enter gmail" class="w-[30rem] h-[3.5rem] rounded-[10px] border-2 border-white px-2 text-xl flex justify-center items-center bg-[#252525] text-white font-semibold outline-none placeholder-white" >
+            <label for="" class="text-2xl w-[30rem] h-[3.5] text-2xl px-1 text-[#b9e24d] my-2 font-semibold text-lg  " >Password</label>
+            <input type="password" placeholder="Enter password" class="w-[30rem] h-[3.5rem] rounded-[10px] border-2 border-white px-2 text-xl flex justify-center items-center bg-[#252525] text-white font-semibold outline-none placeholder-white">
+            <button class="w-[30rem] h-[3.5rem] bg-[#b9e24d] text-3xl rounded-[10px] my-8 text-white">Login</button>
+        </form>
+        <div class="h-12 flex justify-center item-center   ">
+            <p class="h-full  flex items-center justify-center w-64 font-semibold text-white w-[70%]  ">Don't have an account? <span class="underline font-semibold text-[#b9e24d] mx-4 hover:text-white">Register</span></p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
